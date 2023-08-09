@@ -12,10 +12,10 @@ func TestDivideByZeroShouldThrowError(t *testing.T) {
 	}
 
 }
-func TestDivisionShouldReturnTypeFloat64(t *testing.T) {
-	divisionResult, _ := Division(1, 1)
-	got := reflect.TypeOf(divisionResult).String()
-	want := "float64"
+func TestEvaluateCalculShouldReturnTypeString(t *testing.T) {
+	got, _ := EvaluateCalcul("1/1")
+	got = reflect.TypeOf(got).String()
+	want := "string"
 
 	if got != want {
 		t.Errorf("got %v type,  want %v type", got, want)

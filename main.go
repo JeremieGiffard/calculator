@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
 	"fyne.io/fyne/v2/app"
@@ -17,12 +16,13 @@ func main() {
 
 	defaultLabel := widget.NewLabel("julien")
 
-	buttonUpdateLabel := widget.NewButton("click to Update Label", func() {
+	buttonUpdateLabel := widget.NewButton("10/2 * -1", func() {
 		HandleClickButton(defaultLabel)
 
 	})
+	button1 := CreateButton(2)
 
-	contentContainer := container.New(layout.NewGridLayout(2), defaultLabel, buttonUpdateLabel)
+	contentContainer := container.New(layout.NewGridLayout(2), defaultLabel, buttonUpdateLabel, button1[0], button1[1])
 
 	myWindow.SetContent(contentContainer)
 	myWindow.ShowAndRun()
@@ -30,26 +30,22 @@ func main() {
 }
 
 func HandleClickButton(defaultLabel *widget.Label) {
-	expression, _ := govaluate.NewEvaluableExpression("10/2 * -1")
-	result, _ := expression.Evaluate(nil)
-
-	defaultLabel.SetText(fmt.Sprint(result))
+	result, _ := EvaluateCalcul("10/2 * -1")
+	defaultLabel.SetText(result)
 }
 
-type Fraction struct {
-	nominator   float64
-	denominator float64
+func EvaluateCalcul(expressionToEvaluate string) (string, error) {
+	expression, _ := govaluate.NewEvaluableExpression(expressionToEvaluate)
+	result, err := expression.Evaluate(nil)
+	return fmt.Sprint(result), err
 }
 
-func (frac Fraction) decimal() float64 {
-	return frac.nominator / frac.denominator
-}
-
-func Division(fraction1, fraction2 float64) (float64, error) {
-	if fraction2 != 0 {
-		return fraction1 / fraction2, nil
-	} else {
-		return 0, errors.New("tried to divide by 0")
+func CreateButton(iter int) []*widget.Button {
+	var sliceButton []*widget.Button
+	item := 0
+	for item < iter {
+		sliceButton = append(sliceButton, widget.NewButton(fmt.Sprint(item), func() {}))
+		item++
 	}
-
+	return sliceButton
 }

@@ -2,21 +2,38 @@ package main
 
 import (
 	"errors"
+	"fmt"
 
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"gopkg.in/Knetic/govaluate.v2"
 )
 
 func main() {
-	a := app.New()
-	w := a.NewWindow("Hello world")
+	myApp := app.New()
+	myWindow := myApp.NewWindow("Hello world")
 
-	w.SetContent(widget.NewLabel(hello("julien")))
-	w.ShowAndRun()
+	defaultLabel := widget.NewLabel("julien")
+
+	buttonUpdateLabel := widget.NewButton("click to Update Label", func() {
+		HandleClickButton(defaultLabel)
+
+	})
+
+	contentContainer := container.New(layout.NewGridLayout(2), defaultLabel, buttonUpdateLabel)
+
+	myWindow.SetContent(contentContainer)
+	myWindow.ShowAndRun()
+
 }
 
-func hello(name string) string {
-	return "Hi, " + name
+func HandleClickButton(defaultLabel *widget.Label) {
+	expression, _ := govaluate.NewEvaluableExpression("10/2 * -1")
+	result, _ := expression.Evaluate(nil)
+
+	defaultLabel.SetText(fmt.Sprint(result))
 }
 
 type Fraction struct {

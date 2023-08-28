@@ -24,13 +24,13 @@ func main() {
 		HandleClickButton("+")
 	})
 	buttonMinus := widget.NewButton("-", func() {
-		stringToEvaluate += "-"
+		HandleClickButton("-")
 	})
 	buttonDivide := widget.NewButton("/", func() {
-		stringToEvaluate += "/"
+		HandleClickButton("/")
 	})
 	buttonMultiple := widget.NewButton("*", func() {
-		stringToEvaluate += "*"
+		HandleClickButton("*")
 	})
 
 	buttonEqual := widget.NewButton("=", func() {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -10,42 +11,70 @@ import (
 	"gopkg.in/Knetic/govaluate.v2"
 )
 
+var stringToEvaluate = ""
+var resultLabel *widget.Label
+
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Hello world")
 
-	defaultLabel := widget.NewLabel("julien")
+	resultLabel = widget.NewLabel("julien")
 
-	buttonUpdateLabel := widget.NewButton("10/2 * -1", func() {
-		HandleClickButton(defaultLabel)
+	buttonPlus := widget.NewButton("+", func() {
+		HandleClickButton("+")
+	})
+	buttonMinus := widget.NewButton("-", func() {
+		stringToEvaluate += "-"
+	})
+	buttonDivide := widget.NewButton("/", func() {
+		stringToEvaluate += "/"
+	})
+	buttonMultiple := widget.NewButton("*", func() {
+		stringToEvaluate += "*"
+	})
+
+	buttonEqual := widget.NewButton("=", func() {
+		log.Println(stringToEvaluate)
+		if stringToEvaluate != "" {
+			result, _ := EvaluateCalcul(stringToEvaluate)
+			resultLabel.SetText(result)
+			stringToEvaluate = ""
+		} else {
+			log.Println("Nothing to evaluate")
+		}
 
 	})
-	button1 := CreateButton(2)
+	buttonsNumber := CreateButton(9)
 
-	contentContainer := container.New(layout.NewGridLayout(2), defaultLabel, buttonUpdateLabel, button1[0], button1[1])
+	contentContainer := container.New(layout.NewGridLayout(2), resultLabel, buttonsNumber[0], buttonsNumber[1], buttonsNumber[2], buttonsNumber[3], buttonsNumber[4], buttonsNumber[5], buttonsNumber[6], buttonsNumber[7], buttonsNumber[8], buttonPlus, buttonMinus, buttonDivide, buttonMultiple, buttonEqual)
 
 	myWindow.SetContent(contentContainer)
 	myWindow.ShowAndRun()
 
 }
 
-func HandleClickButton(defaultLabel *widget.Label) {
-	result, _ := EvaluateCalcul("10/2 * -1")
-	defaultLabel.SetText(result)
+func CreateButton(iter int) []*widget.Button {
+	var sliceButton []*widget.Button
+	item := 0
+	for item < iter {
+		value := fmt.Sprint(item)
+		newButton := widget.NewButton(fmt.Sprint(item), func() {
+			HandleClickButton(value)
+		})
+		item++
+		sliceButton = append(sliceButton, newButton)
+
+	}
+	return sliceButton
+}
+func HandleClickButton(labelButton string) {
+	log.Println("item :" + labelButton)
+	stringToEvaluate += labelButton
+	resultLabel.SetText(stringToEvaluate)
 }
 
 func EvaluateCalcul(expressionToEvaluate string) (string, error) {
 	expression, _ := govaluate.NewEvaluableExpression(expressionToEvaluate)
 	result, err := expression.Evaluate(nil)
 	return fmt.Sprint(result), err
-}
-
-func CreateButton(iter int) []*widget.Button {
-	var sliceButton []*widget.Button
-	item := 0
-	for item < iter {
-		sliceButton = append(sliceButton, widget.NewButton(fmt.Sprint(item), func() {}))
-		item++
-	}
-	return sliceButton
 }

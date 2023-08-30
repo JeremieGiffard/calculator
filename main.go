@@ -14,46 +14,45 @@ import (
 var stringToEvaluate = ""
 var resultLabel *widget.Label
 
-func main() {
-	myApp := app.New()
-	myWindow := myApp.NewWindow("Hello world")
+// The makeUI function generate all the UI elements of the program.
+func makeUI() (*widget.Label, []*widget.Button) {
+	buttonEvaluate := makeButtonEvaluate()
+	var sliceSign = []string{"+", "-", "*", "/"}
+
+	var sliceButton []*widget.Button
+	sliceButton = append(sliceButton, makeButtonNumber(9)...)
+	sliceButton = append(sliceButton, makeSignButton(sliceSign)...)
+	sliceButton = append(sliceButton, buttonEvaluate)
 
 	resultLabel = widget.NewLabel("julien")
 
-	buttonPlus := widget.NewButton("+", func() {
-		HandleClickButton("+")
-	})
-	buttonMinus := widget.NewButton("-", func() {
-		HandleClickButton("-")
-	})
-	buttonDivide := widget.NewButton("/", func() {
-		HandleClickButton("/")
-	})
-	buttonMultiple := widget.NewButton("*", func() {
-		HandleClickButton("*")
-	})
+	return resultLabel, sliceButton
 
-	buttonEqual := widget.NewButton("=", func() {
+}
+
+// The makeButtonEvaluate function make a equal button with a handler to call the goEvaluate method.
+func makeButtonEvaluate() *widget.Button {
+	equalButton := widget.NewButton("=", func() {
 		log.Println(stringToEvaluate)
 		if stringToEvaluate != "" {
-			result, _ := EvaluateCalcul(stringToEvaluate)
-			resultLabel.SetText(result)
+			result, error := EvaluateCalcul(stringToEvaluate)
+			if error != nil {
+				log.Println(error)
+				resultLabel.SetText("wrong input")
+			} else {
+				resultLabel.SetText(result)
+			}
 			stringToEvaluate = ""
 		} else {
 			log.Println("Nothing to evaluate")
 		}
 
 	})
-	buttonsNumber := CreateButton(9)
-
-	contentContainer := container.New(layout.NewGridLayout(2), resultLabel, buttonsNumber[0], buttonsNumber[1], buttonsNumber[2], buttonsNumber[3], buttonsNumber[4], buttonsNumber[5], buttonsNumber[6], buttonsNumber[7], buttonsNumber[8], buttonPlus, buttonMinus, buttonDivide, buttonMultiple, buttonEqual)
-
-	myWindow.SetContent(contentContainer)
-	myWindow.ShowAndRun()
-
+	return equalButton
 }
 
-func CreateButton(iter int) []*widget.Button {
+// The makeButtonNumber take a int arg and make as many button.
+func makeButtonNumber(iter int) []*widget.Button {
 	var sliceButton []*widget.Button
 	item := 0
 	for item < iter {
@@ -67,14 +66,51 @@ func CreateButton(iter int) []*widget.Button {
 	}
 	return sliceButton
 }
+
+// The makeSignButton take a slice and make button with slice[n] as label
+func makeSignButton(sliceSign []string) []*widget.Button {
+	var sliceButton []*widget.Button
+	for _, v := range sliceSign {
+		value := v
+		newButton := widget.NewButton(v, func() {
+			HandleClickButton(value)
+		})
+		sliceButton = append(sliceButton, newButton)
+	}
+	return sliceButton
+}
+
+func main() {
+	myApp := app.New()
+	myWindow := myApp.NewWindow("Hello world")
+	resultLabel, buttonsUI := makeUI()
+
+	contentContainer := container.New(layout.NewGridLayout(2), resultLabel, buttonsUI[0], buttonsUI[1], buttonsUI[2], buttonsUI[3], buttonsUI[4], buttonsUI[5], buttonsUI[6], buttonsUI[7], buttonsUI[8], buttonsUI[9], buttonsUI[10], buttonsUI[11], buttonsUI[12], buttonsUI[13])
+
+	myWindow.SetContent(contentContainer)
+	myWindow.ShowAndRun()
+
+}
+
+// The HandleClickButton is called on click button event.
+// Concat a string to another and update the UI with new value
 func HandleClickButton(labelButton string) {
 	log.Println("item :" + labelButton)
 	stringToEvaluate += labelButton
 	resultLabel.SetText(stringToEvaluate)
 }
 
+// the EvaluateCalcul is a wrapper to manage govaluate return response
 func EvaluateCalcul(expressionToEvaluate string) (string, error) {
-	expression, _ := govaluate.NewEvaluableExpression(expressionToEvaluate)
-	result, err := expression.Evaluate(nil)
+	var result string
+	expression, err := govaluate.NewEvaluableExpression(expressionToEvaluate)
+	if err != nil {
+		log.Println("error evaluate expression")
+		stringToEvaluate = ""
+		result = "error evaluate expression"
+	} else {
+		output, _ := expression.Evaluate(nil)
+		result = fmt.Sprint(output)
+	}
 	return fmt.Sprint(result), err
 }

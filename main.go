@@ -14,17 +14,37 @@ import (
 var stringToEvaluate = ""
 var resultLabel *widget.Label
 
+type CustomButton struct {
+	Label   string
+	Handler func()
+}
+
+func main() {
+	myApp := app.New()
+	myWindow := myApp.NewWindow("Hello world")
+	resultLabel, buttonsUI := makeUI()
+
+	contentContainer := container.New(layout.NewGridLayout(2), resultLabel, buttonsUI[0], buttonsUI[1], buttonsUI[2], buttonsUI[3], buttonsUI[4], buttonsUI[5], buttonsUI[6], buttonsUI[7], buttonsUI[8], buttonsUI[9], buttonsUI[10], buttonsUI[11], buttonsUI[12], buttonsUI[13], buttonsUI[14])
+
+	myWindow.SetContent(contentContainer)
+	myWindow.ShowAndRun()
+}
+
 // The makeUI function generate all the UI elements of the program.
 func makeUI() (*widget.Label, []*widget.Button) {
-	buttonEvaluate := makeButtonEvaluate()
 	var sliceSign = []string{"+", "-", "*", "/"}
+	var sliceNumber = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+
+	listNumberButtonStruct := makeSimpleCalculButton(sliceNumber)
+	listSignButtonStruct := makeSimpleCalculButton(sliceSign)
+	buttonEvaluate := makeButtonEvaluate()
 
 	var sliceButton []*widget.Button
-	sliceButton = append(sliceButton, makeButtonNumber(9)...)
-	sliceButton = append(sliceButton, makeSignButton(sliceSign)...)
+	sliceButton = append(sliceButton, makeButtonsFromList(listNumberButtonStruct)...)
+	sliceButton = append(sliceButton, makeButtonsFromList(listSignButtonStruct)...)
 	sliceButton = append(sliceButton, buttonEvaluate)
 
-	resultLabel = widget.NewLabel("julien")
+	resultLabel = widget.NewLabel("start")
 
 	return resultLabel, sliceButton
 
@@ -51,45 +71,26 @@ func makeButtonEvaluate() *widget.Button {
 	return equalButton
 }
 
-// The makeButtonNumber take a int arg and make as many button.
-func makeButtonNumber(iter int) []*widget.Button {
-	var sliceButton []*widget.Button
-	item := 0
-	for item < iter {
-		value := fmt.Sprint(item)
-		newButton := widget.NewButton(fmt.Sprint(item), func() {
-			HandleClickButton(value)
-		})
-		item++
-		sliceButton = append(sliceButton, newButton)
-
-	}
-	return sliceButton
-}
-
-// The makeSignButton take a slice and make button with slice[n] as label
-func makeSignButton(sliceSign []string) []*widget.Button {
-	var sliceButton []*widget.Button
+// The makeCustomButton take a slice and make button with slice[n] as label
+func makeSimpleCalculButton(sliceSign []string) []*CustomButton {
+	var sliceCustomButton []*CustomButton
 	for _, v := range sliceSign {
-		value := v
-		newButton := widget.NewButton(v, func() {
-			HandleClickButton(value)
-		})
+		item := v
+		sliceCustomButton = append(sliceCustomButton, makeCustomStruct(item, func() { HandleClickButton(item) }))
+	}
+	return sliceCustomButton
+}
+func makeCustomStruct(arg string, argFunc func()) *CustomButton {
+	return &CustomButton{arg, argFunc}
+}
+
+func makeButtonsFromList(makeMapStringFunc []*CustomButton) []*widget.Button {
+	var sliceButton []*widget.Button
+	for _, value := range makeMapStringFunc {
+		newButton := widget.NewButton(value.Label, value.Handler)
 		sliceButton = append(sliceButton, newButton)
 	}
 	return sliceButton
-}
-
-func main() {
-	myApp := app.New()
-	myWindow := myApp.NewWindow("Hello world")
-	resultLabel, buttonsUI := makeUI()
-
-	contentContainer := container.New(layout.NewGridLayout(2), resultLabel, buttonsUI[0], buttonsUI[1], buttonsUI[2], buttonsUI[3], buttonsUI[4], buttonsUI[5], buttonsUI[6], buttonsUI[7], buttonsUI[8], buttonsUI[9], buttonsUI[10], buttonsUI[11], buttonsUI[12], buttonsUI[13])
-
-	myWindow.SetContent(contentContainer)
-	myWindow.ShowAndRun()
-
 }
 
 // The HandleClickButton is called on click button event.

@@ -15,12 +15,16 @@ func TestEvaluateCalculShouldReturnTypeString(t *testing.T) {
 	}
 }
 
-func TestCreateButton(t *testing.T) {
-	got := makeButtonNumber(5)
-	want := 5
+func TestMakeSimpleCalculButton(t *testing.T) {
+	var sliceNumber = []string{"0", "1", "2", "3", "4", "5"}
+	got := makeSimpleCalculButton(sliceNumber)
+	want := 6
 
 	if len(got) != want {
 		t.Errorf("got %v length, want %v ", len(got), want)
+	}
+	if got[1].Label != sliceNumber[1] {
+		t.Errorf("got %v label, want %v ", got[1].Label, sliceNumber[1])
 	}
 }
 

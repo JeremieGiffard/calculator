@@ -55,9 +55,9 @@ func makeButtonEvaluate() *widget.Button {
 	equalButton := widget.NewButton("=", func() {
 		log.Println(stringToEvaluate)
 		if stringToEvaluate != "" {
-			result, error := EvaluateCalcul(stringToEvaluate)
-			if error != nil {
-				log.Println(error)
+			result, err := EvaluateCalcul(stringToEvaluate)
+			if err != nil {
+				log.Println(err)
 				resultLabel.SetText("wrong input")
 			} else {
 				resultLabel.SetText(result)

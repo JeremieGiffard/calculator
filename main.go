@@ -24,9 +24,15 @@ func main() {
 	myWindow := myApp.NewWindow("Hello world")
 	resultLabel, buttonsUI := makeUI()
 
-	contentContainer := container.New(layout.NewGridLayout(2), resultLabel, buttonsUI[0], buttonsUI[1], buttonsUI[2], buttonsUI[3], buttonsUI[4], buttonsUI[5], buttonsUI[6], buttonsUI[7], buttonsUI[8], buttonsUI[9], buttonsUI[10], buttonsUI[11], buttonsUI[12], buttonsUI[13], buttonsUI[14])
+	contentContainer := container.New(layout.NewGridLayout(3), resultLabel, layout.NewSpacer(), buttonsUI[0], buttonsUI[1], buttonsUI[2], buttonsUI[3], buttonsUI[4], buttonsUI[5], buttonsUI[6], buttonsUI[7], buttonsUI[8], buttonsUI[9], buttonsUI[10], buttonsUI[11], buttonsUI[12], buttonsUI[13], buttonsUI[14])
 
-	myWindow.SetContent(contentContainer)
+	tabs := container.NewAppTabs(
+		container.NewTabItem("Basic", contentContainer),
+		container.NewTabItem("Currency", widget.NewLabel("World!")),
+	)
+	tabs.SetTabLocation(container.TabLocationLeading)
+
+	myWindow.SetContent(tabs)
 	myWindow.ShowAndRun()
 }
 

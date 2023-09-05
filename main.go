@@ -23,7 +23,8 @@ func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Hello world")
 	resultLabel, buttonsUI := makeUI()
-
+	//    TODO : makeUI should return *fyne.Container or *container.AppTabs
+	// Don't switch to fyne.CanvasObject. Make testing not fun at all
 	contentContainer := container.New(layout.NewGridLayout(3), resultLabel, layout.NewSpacer(), buttonsUI[0], buttonsUI[1], buttonsUI[2], buttonsUI[3], buttonsUI[4], buttonsUI[5], buttonsUI[6], buttonsUI[7], buttonsUI[8], buttonsUI[9], buttonsUI[10], buttonsUI[11], buttonsUI[12], buttonsUI[13], buttonsUI[14])
 
 	tabs := container.NewAppTabs(

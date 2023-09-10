@@ -31,6 +31,18 @@ func TestEvaluateCalculErr(t *testing.T) {
 
 }
 
+func TestMakeUILabel(t *testing.T) {
+	test.NewApp()
+
+	containerUI := makeUI()
+	got := len(containerUI.Items)
+
+	want := 2
+	if got != want {
+		t.Errorf("got %v items, want %v ", got, want)
+	}
+}
+
 func TestMakeSimpleCalculButton(t *testing.T) {
 	var sliceNumber = []string{"0", "1", "2", "3", "4", "5"}
 	got := makeSimpleCalculButton(sliceNumber)
@@ -39,36 +51,31 @@ func TestMakeSimpleCalculButton(t *testing.T) {
 	if len(got) != want {
 		t.Errorf("got %v length, want %v ", len(got), want)
 	}
-	if got[1].Label != sliceNumber[1] {
-		t.Errorf("got %v label, want %v ", got[1].Label, sliceNumber[1])
-	}
-}
-
-func TestMakeUILabel(t *testing.T) {
-	labelUI, _ := makeUI()
-
-	got := reflect.TypeOf(labelUI).String()
-	want := "*widget.Label"
-	if got != want {
-		t.Errorf("got %v type, want %v ", got, want)
+	if got[1].Text != sliceNumber[1] {
+		t.Errorf("got %v label, want %v ", got[1].Text, sliceNumber[1])
 	}
 }
 
 func TestMakeUIButton(t *testing.T) {
-	_, sliceButton := makeUI()
+	tabsContainer := makeUI()
 
-	got := sliceButton[1].Text
-	want := "1"
+	got := tabsContainer.Items[0].Text
+	want := "Basic"
 	if got != want {
-		t.Errorf("got text buttin %v , want %v ", got, want)
+		t.Errorf("got tab label %v , want %v ", got, want)
 	}
 }
 
 func TestHandleClickButton(t *testing.T) {
-	labelUI, _ := makeUI()
-	HandleClickButton("1")
+	//test button handler HandleClickButton by Tap on a test button
+	test.NewApp()
+	makeUI()
 
-	got := labelUI.Text
+	var sliceNumber = []string{"0", "1", "2"}
+	testclickValue := makeSimpleCalculButton(sliceNumber)
+	test.Tap(testclickValue[1])
+
+	got := resultLabel.Text
 	want := "1"
 	if got != want {
 		t.Errorf("got text label %v , want %v ", got, want)
@@ -76,13 +83,22 @@ func TestHandleClickButton(t *testing.T) {
 }
 
 func TestMakeButtonEvaluate(t *testing.T) {
+	test.NewApp()
+	makeUI()
+	//reset global var
 	stringToEvaluate = ""
-	labelUI, SliceButtons := makeUI()
-	HandleClickButton("1+4")
+	buttonEvaluate := makeButtonEvaluate()
 
-	test.Tap(SliceButtons[14])
-	got := labelUI.Text
-	want := "5"
+	var sliceNumber = []string{"1", "+", "2"}
+	testClickValue := makeSimpleCalculButton(sliceNumber)
+
+	test.Tap(testClickValue[0]) //"1"
+	test.Tap(testClickValue[1]) //"1+"
+	test.Tap(testClickValue[2]) // "1+2"
+	test.Tap(buttonEvaluate)    //should handle"3"
+
+	got := resultLabel.Text
+	want := "3"
 	if got != want {
 		t.Errorf("got text label %v , want %v ", got, want)
 	}
@@ -90,14 +106,20 @@ func TestMakeButtonEvaluate(t *testing.T) {
 }
 
 func TestMakeButtonEvaluateErr(t *testing.T) {
+
+	makeUI()
+	buttonEvaluate := makeButtonEvaluate()
 	//reset global var
 	stringToEvaluate = ""
-	labelUI, SliceButtons := makeUI()
-	HandleClickButton("+/*")
+	var sliceNumber = []string{"+", "/", "*"}
+	testclickValue := makeSimpleCalculButton(sliceNumber)
+	test.Tap(testclickValue[0]) //"+"
+	test.Tap(testclickValue[1]) //"+/"
+	test.Tap(testclickValue[2]) // "+/*"
+	test.Tap(buttonEvaluate)
 
-	test.Tap(SliceButtons[14])
+	got := resultLabel.Text
 
-	got := labelUI.Text
 	want := "wrong input"
 	if got != want {
 		t.Errorf("got text label %v , want %v ", got, want)
@@ -106,13 +128,11 @@ func TestMakeButtonEvaluateErr(t *testing.T) {
 	stringToEvaluate = ""
 }
 func TestMakeButtonEvaluateEmpty(t *testing.T) {
-	//reset global var
-	stringToEvaluate = ""
-	labelUI, SliceButtons := makeUI()
-	want := labelUI.Text
-	test.Tap(SliceButtons[14])
+	makeUI()
+	want := resultLabel.Text
+	handleEqualButton()
+	got := resultLabel.Text
 
-	got := labelUI.Text
 	if got != want {
 		t.Errorf("Text label should not be updated. got  %v , want %v ", got, want)
 	}

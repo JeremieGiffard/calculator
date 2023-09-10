@@ -7,6 +7,11 @@ import (
 	"fyne.io/fyne/v2/test"
 )
 
+func Cleanup() {
+	//reset global var
+	stringToEvaluate = ""
+}
+
 func TestEvaluateCalculShouldReturnTypeString(t *testing.T) {
 	got, _ := EvaluateCalcul("1/1")
 	got = reflect.TypeOf(got).String()
@@ -32,7 +37,7 @@ func TestEvaluateCalculErr(t *testing.T) {
 }
 
 func TestMakeUILabel(t *testing.T) {
-	test.NewApp()
+	t.Cleanup(Cleanup)
 
 	containerUI := makeUI()
 	got := len(containerUI.Items)
@@ -44,6 +49,7 @@ func TestMakeUILabel(t *testing.T) {
 }
 
 func TestMakeSimpleCalculButton(t *testing.T) {
+	t.Cleanup(Cleanup)
 	var sliceNumber = []string{"0", "1", "2", "3", "4", "5"}
 	got := makeSimpleCalculButton(sliceNumber)
 	want := 6
@@ -67,6 +73,7 @@ func TestMakeUIButton(t *testing.T) {
 }
 
 func TestHandleClickButton(t *testing.T) {
+	t.Cleanup(Cleanup)
 	//test button handler HandleClickButton by Tap on a test button
 	test.NewApp()
 	makeUI()
@@ -83,10 +90,10 @@ func TestHandleClickButton(t *testing.T) {
 }
 
 func TestMakeButtonEvaluate(t *testing.T) {
+	t.Cleanup(Cleanup)
 	test.NewApp()
 	makeUI()
-	//reset global var
-	stringToEvaluate = ""
+
 	buttonEvaluate := makeButtonEvaluate()
 
 	var sliceNumber = []string{"1", "+", "2"}
@@ -106,11 +113,10 @@ func TestMakeButtonEvaluate(t *testing.T) {
 }
 
 func TestMakeButtonEvaluateErr(t *testing.T) {
-
+	t.Cleanup(Cleanup)
 	makeUI()
 	buttonEvaluate := makeButtonEvaluate()
-	//reset global var
-	stringToEvaluate = ""
+
 	var sliceNumber = []string{"+", "/", "*"}
 	testclickValue := makeSimpleCalculButton(sliceNumber)
 	test.Tap(testclickValue[0]) //"+"

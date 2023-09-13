@@ -2,6 +2,7 @@ package main
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"fyne.io/fyne/v2/test"
@@ -144,4 +145,16 @@ func TestMakeButtonEvaluateEmpty(t *testing.T) {
 	}
 	//reset global var
 	stringToEvaluate = ""
+}
+
+func TestHttpConnect(t *testing.T) {
+	resp, err := HttpConnect()
+
+	if err != nil {
+		t.Errorf("err should be nil.Instead got  %v ", err)
+	}
+	want := "ddg_spice_currency"
+	if !strings.Contains(resp, want) {
+		t.Errorf("body should not be empty .Instead got  %v ", resp)
+	}
 }

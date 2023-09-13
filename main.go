@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -11,6 +13,8 @@ import (
 	"gopkg.in/Knetic/govaluate.v2"
 )
 
+const serverPort = 3333
+
 var stringToEvaluate = ""
 var resultLabel *widget.Label
 
@@ -18,6 +22,7 @@ func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Hello world")
 	containerUI := makeUI()
+	HttpConnect()
 
 	myWindow.SetContent(containerUI)
 	myWindow.ShowAndRun()
@@ -107,4 +112,21 @@ func EvaluateCalcul(expressionToEvaluate string) (string, error) {
 		result = fmt.Sprint(output)
 	}
 	return fmt.Sprint(result), err
+}
+
+func HttpConnect() (string, error) {
+	var sb string
+	resp, err := http.Get("https://duckduckgo.com/js/spice/currency/12/eur/usd")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	sb = string(body)
+	// log.Printf("## in ifElse :" + sb)
+
+	log.Printf("## before return :" + sb)
+	return sb, err
 }

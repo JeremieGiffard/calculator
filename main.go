@@ -22,7 +22,8 @@ func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Hello world")
 	containerUI := makeUI()
-	HttpConnect()
+	currencyEndPointURL := "https://duckduckgo.com/js/spice/currency/12/eur/usd"
+	HttpConnect(currencyEndPointURL)
 
 	myWindow.SetContent(containerUI)
 	myWindow.ShowAndRun()
@@ -114,11 +115,12 @@ func EvaluateCalcul(expressionToEvaluate string) (string, error) {
 	return fmt.Sprint(result), err
 }
 
-func HttpConnect() (string, error) {
+func HttpConnect(stringUrl string) (string, error) {
 	var sb string
-	resp, err := http.Get("https://duckduckgo.com/js/spice/currency/12/eur/usd")
+	resp, err := http.Get(stringUrl)
 	if err != nil {
 		log.Fatalln(err)
+		sb = "error get request"
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

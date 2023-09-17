@@ -147,8 +147,9 @@ func TestMakeButtonEvaluateEmpty(t *testing.T) {
 	stringToEvaluate = ""
 }
 
-func TestHttpConnect(t *testing.T) {
-	resp, err := HttpConnect()
+func TestHttpConnectCurrentEndPoint(t *testing.T) {
+
+	resp, err := HttpConnect("https://duckduckgo.com/js/spice/currency/12/eur/usd")
 
 	if err != nil {
 		t.Errorf("err should be nil.Instead got  %v ", err)

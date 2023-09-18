@@ -13,17 +13,18 @@ import (
 	"gopkg.in/Knetic/govaluate.v2"
 )
 
-const serverPort = 3333
-
-var stringToEvaluate = ""
-var resultLabel *widget.Label
+var (
+	stringToEvaluate    = ""
+	resultLabel         *widget.Label
+	inputCurrency       = widget.NewEntry()
+	CurrencyEndPointURL = "https://duckduckgo.com/js/spice/currency/" + inputCurrency.Text + "/eur/usd"
+)
 
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Hello world")
 	containerUI := makeUI()
-	currencyEndPointURL := "https://duckduckgo.com/js/spice/currency/12/eur/usd"
-	HttpConnect(currencyEndPointURL)
+	HttpConnect(CurrencyEndPointURL)
 
 	myWindow.SetContent(containerUI)
 	myWindow.ShowAndRun()
@@ -45,9 +46,20 @@ func makeUI() *container.AppTabs {
 
 	contentContainer := container.New(layout.NewGridLayout(3), resultLabel, layout.NewSpacer(), sliceButton[0], sliceButton[1], sliceButton[2], sliceButton[3], sliceButton[4], sliceButton[5], sliceButton[6], sliceButton[7], sliceButton[8], sliceButton[9], sliceButton[10], sliceButton[11], sliceButton[12], sliceButton[13], sliceButton[14])
 
+	labelCurrency := widget.NewLabel("World!")
+	inputCurrency.SetPlaceHolder("Enter currency...")
+
+	convertCurrencyBtn := widget.NewButton("convert", func() {
+		labelCurrency.SetText(inputCurrency.Text)
+		res, _ := HttpConnect(CurrencyEndPointURL)
+		log.Println(res)
+
+	})
+	currencyContainer := container.New(layout.NewGridLayout(1), labelCurrency, inputCurrency, convertCurrencyBtn)
+
 	tabs := container.NewAppTabs(
 		container.NewTabItem("Basic", contentContainer),
-		container.NewTabItem("Currency", widget.NewLabel("World!")),
+		container.NewTabItem("Currency", currencyContainer),
 	)
 	tabs.SetTabLocation(container.TabLocationLeading)
 

@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -17,14 +18,13 @@ var (
 	stringToEvaluate    = ""
 	resultLabel         *widget.Label
 	inputCurrency       = widget.NewEntry()
-	CurrencyEndPointURL = "https://duckduckgo.com/js/spice/currency/" + inputCurrency.Text + "/eur/usd"
+	CurrencyEndPointURL = "https://duckduckgo.com/js/spice/currency/_PARAM_/eur/usd"
 )
 
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Hello world")
 	containerUI := makeUI()
-	HttpConnect(CurrencyEndPointURL)
 
 	myWindow.SetContent(containerUI)
 	myWindow.ShowAndRun()
@@ -50,9 +50,10 @@ func makeUI() *container.AppTabs {
 	inputCurrency.SetPlaceHolder("Enter currency...")
 
 	convertCurrencyBtn := widget.NewButton("convert", func() {
-		labelCurrency.SetText(inputCurrency.Text)
-		res, _ := HttpConnect(CurrencyEndPointURL)
+
+		res, _ := HttpConnect(strings.Replace(CurrencyEndPointURL, "_PARAM_", inputCurrency.Text, 1))
 		log.Println(res)
+		labelCurrency.SetText(res)
 
 	})
 	currencyContainer := container.New(layout.NewGridLayout(1), labelCurrency, inputCurrency, convertCurrencyBtn)
